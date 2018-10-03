@@ -7,6 +7,10 @@ queue:
   name: Hosted VS2017
 
 steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 2.1.402'
+  inputs:
+    version: 2.1.402
 - task: DotNetCoreCLI@2
   displayName: dotnet restore
   inputs:
