@@ -15,6 +15,22 @@ steps:
 - task: DotNetCoreCLI@1
   displayName: dotnet pack
   inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '-c Release'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+- task: DotNetCoreCLI@2
+  displayName: Test
+  inputs:
+    command: test
+    projects: '**/*[Tt]ests/*.csproj'
+    arguments: '--configuration $(BuildConfiguration)'
+- task: DotNetCoreCLI@1
+  displayName: dotnet pack
+  inputs:
     command: pack
     projects: '**/*.csproj'
     arguments: '-c Release'
