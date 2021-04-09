@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Ninject.Syntax;
 using Ninject.Web.Common;
 using System;
 using Ninject;
 using Ninject.Modules;
+using Ninject.Activation.Blocks;
 
 namespace AspNetCore.DependencyInjection.Ninject.Compat
 {
@@ -19,6 +20,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat
         public override void Load()
         {
             Bind<IServiceProvider>().To<NinjectServiceProvider>().InSingletonScope();
+            Bind<IServiceScopeFactory>().To<NinjectServiceScopeFactory>().InSingletonScope();
             foreach (ServiceDescriptor serviceDescriptor in _serviceCollection)
             {
                 IBindingToSyntax<object> binding = Bind(serviceDescriptor.ServiceType);
@@ -67,6 +69,45 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat
             public object GetService(Type serviceType)
             {
                 return _kernel.Get(serviceType);
+            }
+        }
+
+        private class NinjectServiceScopeFactory : IServiceScopeFactory
+        {
+            private readonly IKernel _kernel;
+
+            public NinjectServiceScopeFactory(IKernel kernel)
+            {
+                _kernel = kernel;
+            }
+
+            public IServiceScope CreateScope() => new NinjectServiceScope(_kernel);
+
+            private sealed class NinjectServiceScope : IServiceScope
+            {
+                private readonly IActivationBlock _activationBlock;
+
+                public NinjectServiceScope(IKernel kernel)
+                {
+                    _activationBlock = kernel.BeginBlock();
+                    ServiceProvider = new NinjectBlockServiceProvider(_activationBlock);
+                }
+
+                public IServiceProvider ServiceProvider { get; }
+
+                public void Dispose() => _activationBlock.Dispose();
+
+                private class NinjectBlockServiceProvider : IServiceProvider
+                {
+                    private IActivationBlock _activationBlock;
+
+                    public NinjectBlockServiceProvider(IActivationBlock activationBlock)
+                    {
+                        _activationBlock = activationBlock;
+                    }
+
+                    public object GetService(Type serviceType) => _activationBlock.Get(serviceType);
+                }
             }
         }
     }

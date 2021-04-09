@@ -6,7 +6,7 @@
     <Company>Idealogic</Company>
     <Product />
     <Description>Use your new services created for Asp.Net Core in your legacy ASP.NET projects that use Ninject as the DI container. E.g. ninjectKernel.AddServices(services =&gt; { services.AddOptions(); });</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
