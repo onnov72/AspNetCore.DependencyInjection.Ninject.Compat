@@ -15,6 +15,10 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
 
             kernel.AddServices(services =>
             {
+                // Below addition to the services is to resolve an issue that is caused by the differences
+                // of Ninject and MS.Extensions.DI 
+                // Ninject will take the constructor with the most params, whether it can resolve these or not
+                // MS DI will take the constructor with the most params it can resolve.
                 services.AddSingleton<ILoggerFactory>(ctx =>
                 {
                     var providers = ctx.GetServices<ILoggerProvider>();
