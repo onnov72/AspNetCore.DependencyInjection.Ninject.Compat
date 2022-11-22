@@ -2,40 +2,35 @@ pool:
   name: Azure Pipelines
   vmImage: windows-latest
 
+variables:
+  buildConfiguration: 'Release'
+
 steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '7.x'
+
 - task: DotNetCoreCLI@2
   displayName: dotnet restore
   inputs:
     command: restore
     projects: '**/*.csproj'
-- task: DotNetCoreCLI@1
-  displayName: dotnet pack
-  inputs:
-    command: build
-    projects: '**/*.csproj'
-    arguments: '-c Release'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '**/*[Tt]ests/*.csproj'
-    arguments: '--configuration $(BuildConfiguration)'
-- task: DotNetCoreCLI@1
-  displayName: dotnet pack
-  inputs:
-    command: pack
-    projects: '**/*.csproj'
-    arguments: '-c Release'
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact'
-  inputs:
-    PathtoPublish: '$(build.artifactstagingdirectory)'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*[Tt]ests/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: Pack NuGet packages
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj;!**/*.Tests.csproj'
+    versioningScheme: 'off'
+    verbosityPack: 'Normal'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
