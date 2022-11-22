@@ -1,8 +1,6 @@
-using Ninject;
-using System;
-using Xunit;
 using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
+using Ninject;
+using Xunit;
 
 namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
 {
@@ -15,7 +13,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
 
             kernel.AddServices(services => services.AddTransient<IFoo, Foo>());
 
-            kernel.Get<IFoo>().Id.ShouldBe(Foo.MagicString);
+            Assert.Equal(Foo.MagicString, kernel.Get<IFoo>().Id);
         }
 
         [Fact]
@@ -28,7 +26,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             IFoo number1 = kernel.Get<IFoo>();
             IFoo number2 = kernel.Get<IFoo>();
 
-            number1.ShouldNotBeSameAs(number2);
+            Assert.NotEqual(number1, number2);
         }
 
         [Fact]
@@ -41,7 +39,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             IFoo number1 = kernel.Get<IFoo>();
             IFoo number2 = kernel.Get<IFoo>();
 
-            number1.ShouldBeSameAs(number2);
+            Assert.Equal(number1, number2);
         }
 
         [Fact]
@@ -55,7 +53,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
                 services.AddSingleton<IBar, Bar>();
             });
 
-            kernel.Get<IBar>().MyFoo.Id.ShouldBe(Foo.MagicString);
+            Assert.Equal(Foo.MagicString, kernel.Get<IBar>().MyFoo.Id);
         }
 
         [Fact]
@@ -69,7 +67,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
                 services.AddSingleton<IBar, Bar>();
             });
 
-            kernel.Get<IBar>().MyFoo.Id.ShouldBe(Foo.MagicString);
+            Assert.Equal(Foo.MagicString, kernel.Get<IBar>().MyFoo.Id);
         }
 
         [Fact]
@@ -78,13 +76,12 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             IKernel kernel = new StandardKernel();
             kernel.Bind<IBar>().To<Bar>();
 
-
             kernel.AddServices(services =>
             {
                 services.AddSingleton<IFoo, Foo>();
             });
 
-            kernel.Get<IBar>().MyFoo.Id.ShouldBe(Foo.MagicString);
+            Assert.Equal(Foo.MagicString, kernel.Get<IBar>().MyFoo.Id);
         }
 
         [Fact]
@@ -98,7 +95,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
                 services.AddTransient<IBar>(serviceProvider => new Bar(serviceProvider.GetService<IFoo>()));
             });
 
-            kernel.Get<IBar>().MyFoo.Id.ShouldBe(Foo.MagicString);
+            Assert.Equal(Foo.MagicString, kernel.Get<IBar>().MyFoo.Id);
         }
 
         [Fact]
@@ -111,7 +108,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
                 services.Add(new ServiceDescriptor(typeof(int), 3));
             });
 
-            kernel.Get<int>().ShouldBe(3);
+            Assert.Equal(3, kernel.Get<int>());
         }
     }
 
@@ -131,7 +128,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
         IFoo MyFoo { get; }
     }
 
-    internal class Bar: IBar
+    internal class Bar : IBar
     {
         public Bar(IFoo foo)
         {

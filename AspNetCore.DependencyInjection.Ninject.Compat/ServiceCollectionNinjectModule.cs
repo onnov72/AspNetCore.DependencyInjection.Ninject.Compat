@@ -5,6 +5,8 @@ using System;
 using Ninject;
 using Ninject.Modules;
 using Ninject.Activation.Blocks;
+using Ninject.Activation.Providers;
+using Ninject.Activation;
 
 namespace AspNetCore.DependencyInjection.Ninject.Compat
 {
@@ -99,7 +101,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat
 
                 private class NinjectBlockServiceProvider : IServiceProvider
                 {
-                    private IActivationBlock _activationBlock;
+                    private readonly IActivationBlock _activationBlock;
 
                     public NinjectBlockServiceProvider(IActivationBlock activationBlock)
                     {

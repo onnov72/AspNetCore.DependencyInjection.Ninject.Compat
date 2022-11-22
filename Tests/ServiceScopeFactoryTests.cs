@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ninject;
-using Shouldly;
 using System;
 using Xunit;
 
@@ -20,7 +19,7 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             var scopedFoo1 = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ScopedFoo>();
             var scopedFoo2 = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ScopedFoo>();
 
-            scopedFoo1.ShouldNotBeSameAs(scopedFoo2);
+            Assert.NotEqual(scopedFoo1, scopedFoo2);
         }
 
         [Fact]
@@ -33,10 +32,10 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             });
             var scopeFactory = kernel.Get<IServiceScopeFactory>();
             var scope = scopeFactory.CreateScope();
-            var scopedFoor1 = scope.ServiceProvider.GetRequiredService<ScopedFoo>();
+            var scopedFoo1 = scope.ServiceProvider.GetRequiredService<ScopedFoo>();
             var scopedFoo2 = scope.ServiceProvider.GetRequiredService<ScopedFoo>();
 
-            scopedFoor1.ShouldBeSameAs(scopedFoo2);
+            Assert.Equal(scopedFoo1, scopedFoo2);
         }
 
         [Fact]
@@ -51,9 +50,9 @@ namespace AspNetCore.DependencyInjection.Ninject.Compat.Tests
             var scope = scopeFactory.CreateScope();
             var scopedFoo = scope.ServiceProvider.GetRequiredService<ScopedFoo>();
 
-            scopedFoo.IsDisposed.ShouldBeFalse();
+            Assert.False(scopedFoo.IsDisposed);
             scope.Dispose();
-            scopedFoo.IsDisposed.ShouldBeTrue();
+            Assert.True(scopedFoo.IsDisposed);
         }
     }
 
